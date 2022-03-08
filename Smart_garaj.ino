@@ -1,9 +1,7 @@
-
 #include <Stepper.h>
 #include "IRremote.h"
 
 IRrecv irrecv(A5); // указываем вывод, к которому подключен приемник
-
 decode_results results;
 
 #define STEPS 300
@@ -16,50 +14,40 @@ int Door_sensor = 2;
 
 Stepper stepper(STEPS, 8, 9, 10, 11);
 
-bool Trivoga = false; 
+bool Alert = false; 
 bool Alarm = false;
-bool Svet = false;
+bool Lights = false;
 bool Out_cickl = false;
-bool Zvuk = false;
+bool Sound = false;
 
 int shak = 30000;
 int bastapku_shak = 0;
 bool shak_TF = true;
 
 bool varota_tf = false;
-bool varota_kazir = false;
+bool GateOpen = false;
 int Stepmotor_step = 500;
 
 
 void setup() {
   Serial.begin(9600); // выставляем скорость COM порта
   irrecv.enableIRIn(); // запускаем прием
-
   pinMode(tone_pin, OUTPUT); 
   pinMode(main_led, OUTPUT); 
-  
   pinMode(Move_sensor, INPUT); 
   pinMode(Door_sensor, INPUT);
-   
   stepper.setSpeed(30);
 }
 
 void loop() {
-
   read_IR();
-  
   Trivoga_TF();
-
-  open_vorota();
-
-  
-  digitalWrite(main_led, Svet);
-
+  OpenGate();
+  digitalWrite(main_led, Lights);
   digitalWrite(tone_pin, Zvuk);
 
-
   if (Alarm){
-    if((digitalRead(Move_sensor)) || (digitalRead(Door_sensor) == false)){ 
+    if((digitalRead(Move_sensor) || digitalRead(Door_sensor)) == false)){ 
       Trivoga = true; 
     }
   }
@@ -69,42 +57,39 @@ void loop() {
 }
 
 void read_IR(){
-  if ( irrecv.decode( &results )) { // если данные пришли
-    Serial.println( results.value);
+  if (irrecv.decode(&results)){ // если данные пришли
+    Serial.println(results.value);
     if (results.value == 16750695){
         Alarm = false;
-        Trivoga = false;
-        Svet = false;
+        Alert = false;
+        Lights = false;
         Zvuk = false;
         noTone(tone_pin);
-        Serial.println("Allartm OFF");
+        Serial.println("Alarm OFF");
     }
     else if(results.value == 16738455){
         Alarm = true;
-        Svet = false;
+        Lights = false;
         varota_tf = false;
-        Serial.println("Allartm ON");
+        Serial.println("Alarm ON");
     }
     
-    if (Alarm){
-      
-    }
-    else{
+    if (Alarm == false){
       if(results.value == 16756815){
-        Svet = false;
-        Serial.println("svet osh");
+        Lights = false;
+        Serial.println("Lights off");
       }
       else if(results.value == 16748655){
-          Svet = true;
-          Serial.println("svet kosul");
+        Lights = true;
+        Serial.println("Lights on");
       }
       else if(results.value == 16730805){
         varota_tf = false;
-        Serial.println("Vorota_jap");
+        Serial.println("Open gate");
       }
       else if(results.value == 16718055){
         varota_tf = true;
-        Serial.println("Vorota_ash");
+        Serial.println("Close gate");
       }
     }
       
@@ -119,7 +104,7 @@ void Trivoga_TF(){
       if (bastapku_shak<shak){
         if(bastapku_shak == 2){
           Serial.println("on");
-          Svet = true;
+          Lights = true;
           Zvuk = true;
         }
         bastapku_shak++;
@@ -133,7 +118,7 @@ void Trivoga_TF(){
       if (bastapku_shak<shak){
         if(bastapku_shak == 2){
           Serial.println("off");
-          Svet = false;
+          Lights = false;
           Zvuk = false;
         }
         bastapku_shak++;
@@ -148,21 +133,21 @@ void Trivoga_TF(){
   }
 }
 
-void open_vorota(){
-  if(varota_kazir){
-    if(varota_tf != varota_kazir){
-      Serial.println("asu bastaldu");
+void OpenGate(){
+  if(GateOpen){
+    if(varota_tf != GateOpen){
+      Serial.println("Gates are opening");
       stepper.step(Stepmotor_step);
-      Serial.println("asu bitti");
-      varota_kazir = varota_tf;
+      Serial.println("Gates are open");
+      GateOpen = varota_tf;
     }
   }
   else{
-    if(varota_tf != varota_kazir){
-      Serial.println("jaby bastaldu");
+    if(varota_tf != GateOpen){
+      Serial.println("Gates are closing");
       stepper.step(-Stepmotor_step);
-      Serial.println("jaby bitti");
-      varota_kazir = varota_tf;
+      Serial.println("Gates are closed");
+      GateOpen = varota_tf;
     }
   }
 }
