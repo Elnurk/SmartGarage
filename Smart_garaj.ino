@@ -44,15 +44,11 @@ void loop() {
   Trivoga_TF();
   OpenGate();
   digitalWrite(main_led, Lights);
-  digitalWrite(tone_pin, Zvuk);
-
+  digitalWrite(tone_pin, Sound);
   if (Alarm){
     if((digitalRead(Move_sensor) || digitalRead(Door_sensor)) == false)){ 
-      Trivoga = true; 
+      Alert = true; 
     }
-  }
-  else{
-    
   }
 }
 
@@ -63,13 +59,13 @@ void read_IR(){
         Alarm = false;
         Alert = false;
         Lights = false;
-        Zvuk = false;
+        Sound = false;
         noTone(tone_pin);
         Serial.println("Alarm OFF");
     }
     else if(results.value == 16738455){
         Alarm = true;
-        Lights = false;
+        Lights = true;
         varota_tf = false;
         Serial.println("Alarm ON");
     }
@@ -99,13 +95,13 @@ void read_IR(){
 
 
 void Trivoga_TF(){
-  if (Trivoga){
+  if (Alert){
     if(shak_TF){
       if (bastapku_shak<shak){
         if(bastapku_shak == 2){
           Serial.println("on");
           Lights = true;
-          Zvuk = true;
+          Sound = true;
         }
         bastapku_shak++;
       }
@@ -119,7 +115,7 @@ void Trivoga_TF(){
         if(bastapku_shak == 2){
           Serial.println("off");
           Lights = false;
-          Zvuk = false;
+          Sound = false;
         }
         bastapku_shak++;
       }
