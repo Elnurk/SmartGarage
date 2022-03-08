@@ -7,7 +7,7 @@ decode_results results;
 #define STEPS 300
 
 // pin install ---------------
-int tone_pin = 7;
+int buzzer = 7;
 int main_led = 4;
 int Move_sensor = 3;
 int Door_sensor = 2;
@@ -17,14 +17,7 @@ Stepper stepper(STEPS, 8, 9, 10, 11);
 bool Alert = false; 
 bool Alarm = false;
 bool Lights = false;
-bool Out_cickl = false;
 bool Sound = false;
-
-int shak = 30000;
-int bastapku_shak = 0;
-bool shak_TF = true;
-
-bool varota_tf = false;
 bool GateOpen = false;
 int Stepmotor_step = 500;
 
@@ -41,10 +34,10 @@ void setup() {
 
 void loop() {
   read_IR();
-  Trivoga_TF();
+  AlertCheck();
   OpenGate();
   digitalWrite(main_led, Lights);
-  digitalWrite(tone_pin, Sound);
+  digitalWrite(buzzer, Sound);
   if (Alarm){
     if((digitalRead(Move_sensor) || digitalRead(Door_sensor)) == false)){ 
       Alert = true; 
@@ -60,13 +53,12 @@ void read_IR(){
         Alert = false;
         Lights = false;
         Sound = false;
-        noTone(tone_pin);
+        noTone(buzzer);
         Serial.println("Alarm OFF");
     }
     else if(results.value == 16738455){
         Alarm = true;
         Lights = true;
-        varota_tf = false;
         Serial.println("Alarm ON");
     }
     
@@ -80,11 +72,11 @@ void read_IR(){
         Serial.println("Lights on");
       }
       else if(results.value == 16730805){
-        varota_tf = false;
+        OpenGate(Open);
         Serial.println("Open gate");
       }
       else if(results.value == 16718055){
-        varota_tf = true;
+        OpenGate(Closed);
         Serial.println("Close gate");
       }
     }
@@ -94,56 +86,26 @@ void read_IR(){
 }
 
 
-void Trivoga_TF(){
+void AlertCheck(){
   if (Alert){
-    if(shak_TF){
-      if (bastapku_shak<shak){
-        if(bastapku_shak == 2){
-          Serial.println("on");
-          Lights = true;
-          Sound = true;
-        }
-        bastapku_shak++;
-      }
-      else{
-        bastapku_shak = 0;
-        shak_TF = false;
-      }
-    }
-    else{
-      if (bastapku_shak<shak){
-        if(bastapku_shak == 2){
-          Serial.println("off");
-          Lights = false;
-          Sound = false;
-        }
-        bastapku_shak++;
-      }
-      else{
-        bastapku_shak = 0;
-        shak_TF = true;
-      }
-    }
+    Serial.println("on");
+    Lights = true;
+    Sound = true;
   }
   else{
+    Serial.println("off");
+    Lights = false;
+    Sound = false;
   }
 }
 
-void OpenGate(){
-  if(GateOpen){
-    if(varota_tf != GateOpen){
-      Serial.println("Gates are opening");
+void OpenGate(String GateStatus){
+  if(GateStatus == "Open"){
       stepper.step(Stepmotor_step);
       Serial.println("Gates are open");
-      GateOpen = varota_tf;
-    }
   }
-  else{
-    if(varota_tf != GateOpen){
-      Serial.println("Gates are closing");
+  else if (GateStatus == "Closed"){
       stepper.step(-Stepmotor_step);
       Serial.println("Gates are closed");
-      GateOpen = varota_tf;
-    }
   }
 }
