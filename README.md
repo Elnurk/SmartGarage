@@ -1,11 +1,11 @@
 # SmartGarage
 
-SmartGarage is a microcontroller‑based garage door controller designed to automate the opening and closing of a garage door safely.  The project was originally developed for a robotics competition and demonstrates the basics of digital I/O, sensor handling and state machines using the Arduino framework.
+SmartGarage is a microcontroller‑based garage door controller designed to automate the opening and closing of a garage door safely. The project was originally developed out of pure interest and demonstrates the basics of digital I/O, sensor handling and state machines using the Arduino framework.
 
 ## Features
-- **Remote control**: Start or stop the door with a wireless remote or push button.
-- **Safety sensors**: Uses limit switches or hall sensors to detect when the door is fully open or closed to prevent damage.
-- **Dual firmware versions**: Two `.ino` sketches are provided (`Smart_garaj.ino` and `Smart_garajBekaVer.ino`) to illustrate different approaches or hardware revisions.
+- **Remote control**: Open or close the door with a wireless remote.
+- **Guard mode**: Triggers sound and LED alarm when movement is noticed inside of the garage while Guard Mode is active.
+- **Safety sensors**: Uses limit switches to detect when the door is fully open or closed to prevent damage.
 - **Modular design**: Simple code structure makes it easy to adapt the logic for other actuators or sensors.
 
 ## Hardware
@@ -19,7 +19,7 @@ SmartGarage is a microcontroller‑based garage door controller designed to auto
 - **Libraries**: Only the standard Arduino core is required.  If additional libraries are needed (e.g., for RF receivers), place their ZIP files inside a `library/` folder in this repository.
 
 ## Build & Upload
-1. Open the desired sketch (`Smart_garaj.ino` or `Smart_garajBekaVer.ino`) in the Arduino IDE.
+1. Open the main sketch in the Arduino IDE.
 2. Select your board and COM port from the **Tools** menu.
 3. Click **Verify** to compile.
 4. Click **Upload** to flash the firmware onto your Arduino.
