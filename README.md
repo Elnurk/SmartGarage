@@ -1,6 +1,6 @@
 # SmartGarage
 
-SmartGarage is a microcontroller‑based garage door controller designed to automate the opening and closing of a garage door safely. The project was originally developed out of pure interest and demonstrates the basics of digital I/O, sensor handling and state machines using the Arduino framework.
+SmartGarage is a microcontroller‑based garage door controller designed to automate the opening and closing of a garage door safely.  The project was originally developed out of pure interest and demonstrates the basics of digital I/O, sensor handling and state machines using the Arduino framework.
 
 ## Features
 - **Remote control**: Open or close the door with a wireless remote.
@@ -26,8 +26,8 @@ SmartGarage is a microcontroller‑based garage door controller designed to auto
 
 Alternatively, using the command‑line **arduino-cli**:
 ```bash
-arduino-cli compile --fqbn arduino:avr:uno Smart_garaj.ino
-arduino-cli upload -p <PORT> --fqbn arduino:avr:uno Smart_garaj.ino
+arduino-cli compile --fqbn arduino:avr:uno Main.ino
+arduino-cli upload -p <PORT> --fqbn arduino:avr:uno Main.ino
 ```
 
 ## Contributing
